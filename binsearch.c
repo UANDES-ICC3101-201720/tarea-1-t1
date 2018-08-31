@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <time.h>
+#include <pthread.h>
 #include "types.h"
 #include "const.h"
 #include "util.h"
@@ -28,11 +29,60 @@ int main(int argc, char** argv) {
 
     printf("[binsearch] Starting up...\n");
 
+    int cores = sysconf(_SC_NPROCESSORS_ONLN);
+
     /* Get the number of CPU cores available */
     printf("[binsearch] Number of cores available: '%ld'\n",
            sysconf(_SC_NPROCESSORS_ONLN));
 
-    /* TODO: parse arguments with getopt */
+    /* parse arguments with getopt */
+
+    int tvalue = 3;
+    int evalue = 1;
+    int pvalue = 1000;
+
+    int index;
+    int c;
+
+    opterr = 0;
+
+
+    while ((c = getopt (argc, argv, "T:E:P:")) != -1)
+        switch (c)
+        {
+            case 'T':
+                tvalue = atoi(optarg);
+                break;
+            case 'E':
+                evalue = atoi(optarg);
+                break;
+            case 'P':
+                pvalue = atoi(optarg);
+                break;
+            case '?':
+                if (optopt == 'T')
+                    fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+                else if (optopt == 'E')
+                    fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+                else if (optopt == 'P')
+                    fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+                else if (isprint (optopt))
+                    fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+                else
+                    fprintf (stderr,
+                             "Unknown option character `\\x%x'.\n",
+                             optopt);
+                return 1;
+            default:
+                abort ();
+        }
+
+
+//    printf ("T = %d, E = %d, P = %d\n",
+//            tvalue, evalue, pvalue);
+//    for (index = optind; index < argc; index++)
+//        printf ("Non-option argument %s\n", argv[index]);
+
 
     /* TODO: start datagen here as a child process. */
 
