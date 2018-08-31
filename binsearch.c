@@ -77,14 +77,30 @@ int main(int argc, char** argv) {
                 abort ();
         }
 
-
-//    printf ("T = %d, E = %d, P = %d\n",
-//            tvalue, evalue, pvalue);
-//    for (index = optind; index < argc; index++)
-//        printf ("Non-option argument %s\n", argv[index]);
+        //printf ("T = %d, E = %d, P = %d\n", tvalue, evalue, pvalue);
+        //for (index = optind; index < argc; index++)
+        //    printf ("Non-option argument %s\n", argv[index]);
 
 
-    /* TODO: start datagen here as a child process. */
+    /* Start datagen as a child process. */
+
+    int child = fork();
+    if (child < 0) {
+        fprintf(stderr, "forking a child failed\n");
+        exit(-1);
+    } else if (child == 0) { // Child process
+        close(STDOUT_FILENO); // Close stdout for datagen
+        char *myargs[2];
+        myargs[0] = strdup("./datagen");
+        myargs[1] = NULL;
+        printf("Imachild");
+        execvp(myargs[0], myargs);
+        printf("Imachild2");
+//        exit(1);
+    } else { // parent
+        sleep(1); // wait till child is up and running
+    }
+
 
     /* TODO: implement code for your experiments using data provided by datagen and your
      * serial and parallel versions of binsearch.
