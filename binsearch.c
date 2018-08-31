@@ -12,9 +12,15 @@
 #include "const.h"
 #include "util.h"
 
-// TODO: implement
-int serial_binsearch() {
-    return 0;
+int serial_binsearch(int *array, int target, int left, int right) {
+    int middle = (left + right) / 2;
+    if (array[middle] == target) {
+        return 1;
+    } else if (target < array[middle]) {
+        return binsearch(array, target, left, middle - 1);
+    } else {
+        return binsearch(array, target, middle + 1, right);
+    }
 }
 
 // TODO: implement
