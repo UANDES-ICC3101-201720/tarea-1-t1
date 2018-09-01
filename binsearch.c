@@ -13,14 +13,17 @@
 #include "const.h"
 #include "util.h"
 
+int serial_binsearch(int *array, int target, int left, int right);
+int parallel_binsearch(int *array, int target, int cores);
+
 int serial_binsearch(int *array, int target, int left, int right) {
     int middle = (left + right) / 2;
     if (array[middle] == target) {
         return 1;
     } else if (target < array[middle]) {
-        return binsearch(array, target, left, middle - 1);
+        return serial_binsearch(array, target, left, middle - 1);
     } else {
-        return binsearch(array, target, middle + 1, right);
+        return serial_binsearch(array, target, middle + 1, right);
     }
 }
 
@@ -162,8 +165,8 @@ int main(int argc, char** argv) {
         /* SERIAL: Get the wall clock time at start */
         clock_gettime(CLOCK_MONOTONIC, &start_serial);
 
-        /* Burn CPU time */
-        for (int i = 0; i<INT_MAX/2; i++);
+        /* Call serial binary search */
+        serial_binsearch(readbuf[1], readbuf[pvalue], 0, numvalues - 1);
 
         /* SERIAL: Get the wall clock time at finish */
         clock_gettime(CLOCK_MONOTONIC, &finish_serial);
