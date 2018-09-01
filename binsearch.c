@@ -146,6 +146,8 @@ int main(int argc, char** argv) {
         exit(-1);
     }
 
+    // Print required header of output
+    printf("E,T,TIEMPO_SERIAL,TIEMPO_PARALELO");
 
     // Experiments loop
     for (int i = 0; i < evalue; ++i) {
