@@ -15,7 +15,19 @@
 #include "util.h"
 
 int serial_binsearch(UINT *array, UINT target, UINT left, UINT right);
-int parallel_binsearch(UINT array, UINT target, int cores);
+//int parallel_binsearch(UINT *array, UINT target, int cores, int n, int arrlen);
+void* parallel_binsearch(void*);
+// structure to hold data passed to  thread
+typedef struct thdata_ {
+    UINT *array;
+    UINT target;
+    int cores;
+    int n;
+    int arrlen;
+
+} thdata;
+
+
 
 int serial_binsearch(UINT *array, UINT target, UINT left, UINT right) {
     UINT middle = (left + right) / 2;
@@ -29,8 +41,19 @@ int serial_binsearch(UINT *array, UINT target, UINT left, UINT right) {
 }
 
 // TODO: implement
-int parallel_binsearch(UINT array, UINT target, int cores) {
-    return 0;
+void* parallel_binsearch(void* ptr) {
+    thdata* data;
+    data = (thdata*) ptr;
+    UINT start, ending;
+    UINT *array = data->array;
+    UINT target = data->target;
+    int cores = data->cores;
+    int n = data->n;
+    int arrlen = data->arrlen;
+
+    start = (UINT) (n * ((arrlen-1) / cores));
+    ending = (UINT) ((n + 1) * ((arrlen-1) / cores));
+    return (void*) serial_binsearch(array, target, start, ending);
 }
 
 int main(int argc, char** argv) {
@@ -183,8 +206,31 @@ int main(int argc, char** argv) {
         /* Parallel: Get the wall clock time at start */
         clock_gettime(CLOCK_MONOTONIC, &start_parallel);
 
-        /* Burn CPU time */
-        for (int i = 0; i<INT_MAX/2; i++);
+
+
+        pthread_t threads[cores];
+
+        thdata* datas = malloc(sizeof(thdata)+100);
+
+        datas->arrlen = (int) numvalues;
+        datas->n = i;
+        datas->array = readbuf;
+        datas->cores = cores;
+        datas->target = readbuf[pvalue];
+
+        for (int i = 0; i < cores; i++)
+            pthread_create(&threads[i], NULL, parallel_binsearch, (void*)datas);
+
+        for (int i = 0; i < cores; i++)
+            pthread_join(threads[i], NULL);
+
+        /* Call parallel binary search */
+//        parallel_binsearch(readbuf, readbuf[pvalue], cores,(int) numvalues);
+
+
+
+
+
 
         /* Parallel: Get the wall clock time at finish */
         clock_gettime(CLOCK_MONOTONIC, &finish_parallel);
