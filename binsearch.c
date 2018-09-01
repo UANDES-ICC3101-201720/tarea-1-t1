@@ -138,28 +138,26 @@ int main(int argc, char** argv) {
         exit(-1);
     }
 
-    // Send request to datagen
-    if (write(fd, data, strlen(data)) == -1) {
-        perror("[binsearch] Sending message error.\n");
-        exit(-1);
-    }
-
-    // Read stream (by CLAUDIO ALVAREZ GOMEZ)
-    while (readvalues < numvalues) {
-        /* read the bytestream */
-        readbytes = read(fd, readbuf + readvalues, sizeof(UINT) * 1000);
-        readvalues += readbytes / 4;
-    }
-
-
-    // Send END to datagen
-    if (write(fd, DATAGEN_END_CMD, strlen(DATAGEN_END_CMD)) == -1) {
-        perror("[binsearch] Sending END message error.\n");
-        exit(-1);
-    }
 
     // Experiments loop
     for (int i = 0; i < evalue; ++i) {
+
+        /* Create data */
+        // Send request to datagen
+        if (write(fd, data, strlen(data)) == -1) {
+            perror("[binsearch] Sending message error.\n");
+            exit(-1);
+        }
+
+        // Read stream (by CLAUDIO ALVAREZ GOMEZ)
+        while (readvalues < numvalues) {
+            /* read the bytestream */
+            readbytes = read(fd, readbuf + readvalues, sizeof(UINT) * 1000);
+            readvalues += readbytes / 4;
+        }
+
+
+
 
         /* SERIAL: Get the wall clock time at start */
         clock_gettime(CLOCK_MONOTONIC, &start_serial);
@@ -195,9 +193,11 @@ int main(int argc, char** argv) {
 
     }
 
-
-
-
+    // Send END to datagen
+    if (write(fd, DATAGEN_END_CMD, strlen(DATAGEN_END_CMD)) == -1) {
+        perror("[binsearch] Sending END message error.\n");
+        exit(-1);
+    }
 
     free(readbuf);
     exit(0);
