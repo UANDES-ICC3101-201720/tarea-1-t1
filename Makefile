@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall
+CFLAGS=-std=gnu11 -Wall -lpthread -lm
 
 all: binsearch datagen
 
