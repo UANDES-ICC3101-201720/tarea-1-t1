@@ -119,6 +119,7 @@ int main(int argc, char** argv) {
             }
             else if (strstr(cmd, DATAGEN_END_CMD) != NULL) {
                 printf("[datagen] Now exiting.\n");
+                close(fd);
                 exit(0);
             }
             else {
