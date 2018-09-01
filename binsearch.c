@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <math.h>
 #include <unistd.h>
@@ -13,11 +14,11 @@
 #include "const.h"
 #include "util.h"
 
-int serial_binsearch(int *array, int target, int left, int right);
-int parallel_binsearch(int *array, int target, int cores);
+int serial_binsearch(UINT *array, UINT target, UINT left, UINT right);
+int parallel_binsearch(UINT array, UINT target, int cores);
 
-int serial_binsearch(int *array, int target, int left, int right) {
-    int middle = (left + right) / 2;
+int serial_binsearch(UINT *array, UINT target, UINT left, UINT right) {
+    UINT middle = (left + right) / 2;
     if (array[middle] == target) {
         return 1;
     } else if (target < array[middle]) {
@@ -28,7 +29,7 @@ int serial_binsearch(int *array, int target, int left, int right) {
 }
 
 // TODO: implement
-int parallel_binsearch(int *array, int target, int cores) {
+int parallel_binsearch(UINT array, UINT target, int cores) {
     return 0;
 }
 
@@ -125,6 +126,10 @@ int main(int argc, char** argv) {
     sprintf(t, "%d", tvalue);
     strcat(data, t);
 
+    // pre req socket
+    struct sockaddr_un addr;
+    int fd,cl,rc;
+
     // Create socket
     if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
         perror("[binsearch] Error creating socket.\n");
@@ -166,7 +171,7 @@ int main(int argc, char** argv) {
         clock_gettime(CLOCK_MONOTONIC, &start_serial);
 
         /* Call serial binary search */
-        serial_binsearch(readbuf[1], readbuf[pvalue], 0, numvalues - 1);
+        serial_binsearch(readbuf, readbuf[pvalue], 1, (UINT) (numvalues - 1));
 
         /* SERIAL: Get the wall clock time at finish */
         clock_gettime(CLOCK_MONOTONIC, &finish_serial);
