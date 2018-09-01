@@ -38,13 +38,13 @@ int main(int argc, char** argv) {
     double elapsed_serial = 0;
     double elapsed_parallel = 0;
 
-    printf("[binsearch] Starting up...\n");
+//    printf("[binsearch] Starting up...\n");
 
     int cores = sysconf(_SC_NPROCESSORS_ONLN);
 
     /* Get the number of CPU cores available */
-    printf("[binsearch] Number of cores available: '%ld'\n",
-           sysconf(_SC_NPROCESSORS_ONLN));
+//    printf("[binsearch] Number of cores available: '%ld'\n",
+//           sysconf(_SC_NPROCESSORS_ONLN));
 
     /* parse arguments with getopt */
 
@@ -147,7 +147,7 @@ int main(int argc, char** argv) {
     }
 
     // Print required header of output
-    printf("E,T,TIEMPO_SERIAL,TIEMPO_PARALELO");
+    printf("E,T,TIEMPO_SERIAL,TIEMPO_PARALELO\n");
 
     // Experiments loop
     for (int i = 0; i < evalue; ++i) {
@@ -199,7 +199,7 @@ int main(int argc, char** argv) {
         elapsed_parallel += (finish_parallel.tv_nsec - start_parallel.tv_nsec) / 1000000000.0;
 
         /* Print the time elapsed (in seconds) */
-        printf("Serial: %lf\n, parallel: %lf\n", elapsed_serial, elapsed_parallel);
+        printf("%d,%d,%lf,%lf\n", i, tvalue, elapsed_serial, elapsed_parallel);
 
     }
 
