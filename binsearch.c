@@ -8,6 +8,7 @@
 #include <string.h>
 #include <time.h>
 #include <pthread.h>
+#include <limits.h>
 #include "types.h"
 #include "const.h"
 #include "util.h"
@@ -29,9 +30,9 @@ int parallel_binsearch(int *array, int target, int cores) {
 }
 
 int main(int argc, char** argv) {
-    /* TODO: move this time measurement to right before the execution of each binsearch algorithms
-     * in your experiment code. It now stands here just for demonstrating time measurement. */
-    clock_t cbegin = clock();
+    struct timespec start_serial, finish_serial, start_parallel, finish_parallel;
+    double elapsed_serial = 0;
+    double elapsed_parallel = 0;
 
     printf("[binsearch] Starting up...\n");
 
@@ -160,15 +161,43 @@ int main(int argc, char** argv) {
     // Experiments loop
     for (int i = 0; i < evalue; ++i) {
 
+        /* SERIAL: Get the wall clock time at start */
+        clock_gettime(CLOCK_MONOTONIC, &start_serial);
+
+        /* Burn CPU time */
+        for (int i = 0; i<INT_MAX/2; i++);
+
+        /* SERIAL: Get the wall clock time at finish */
+        clock_gettime(CLOCK_MONOTONIC, &finish_serial);
+
+
+
+        /* Parallel: Get the wall clock time at start */
+        clock_gettime(CLOCK_MONOTONIC, &start_parallel);
+
+        /* Burn CPU time */
+        for (int i = 0; i<INT_MAX/2; i++);
+
+        /* Parallel: Get the wall clock time at finish */
+        clock_gettime(CLOCK_MONOTONIC, &finish_parallel);
+
+
+
+        /* Calculate serial time elapsed */
+        elapsed_serial = (finish_serial.tv_sec - start_serial.tv_sec);
+        elapsed_serial += (finish_serial.tv_nsec - start_serial.tv_nsec) / 1000000000.0;
+        /* Calculate parallel time elapsed */
+        elapsed_parallel = (finish_parallel.tv_sec - start_parallel.tv_sec);
+        elapsed_parallel += (finish_parallel.tv_nsec - start_parallel.tv_nsec) / 1000000000.0;
+
+        /* Print the time elapsed (in seconds) */
+        printf("Serial: %lf\n, parallel: %lf\n", elapsed_serial, elapsed_parallel);
+
     }
 
-    /* Probe time elapsed. */
-    clock_t cend = clock();
 
-    // Time elapsed in miliseconds.
-    double time_elapsed = ((double) (cend - cbegin) / CLOCKS_PER_SEC) * 1000;
 
-    printf("Time elapsed '%lf' [ms].\n", time_elapsed);
+
 
     free(readbuf);
     exit(0);
